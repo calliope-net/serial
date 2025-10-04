@@ -14,7 +14,8 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
 
 
 */
-    let read_list: string[]
+    let read_list: string[] = []
+    let i_list: number
 
     //% group="MQTT" subcategory=MQTT
     //% block="beim Start" weight=9
@@ -29,11 +30,42 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
         read_list = []
     }
 
+
+    //% group="MQTT" subcategory=MQTT
+    //% block="AT %at timeout %timeout || enabled %enabled" weight=8
+    //% enabled.shadow=toggleYesNo
+    export function at_command(at_command: eAT_commands, timeout: number, enabled = true) {
+        let at = ""
+        switch (at_command) {
+            case eAT_commands.at: { at = "AT"; break }
+            case eAT_commands.at_rst: { at = "AT+RST"; break }
+            case eAT_commands.ate0: { at = "ATE0"; break }
+            case eAT_commands.ate1: { at = "ATE1"; break }
+            case eAT_commands.at_gmr: { at = "AT+GMR"; break }
+            case eAT_commands.at_cmd: { at = "AT+CMD?"; break }
+            case eAT_commands.at_mqttconn: { at = "AT+MQTTCONN?"; break }
+
+        }
+        if (at.length > 0) {
+            serial.writeString(at + String.fromCharCode(13) + String.fromCharCode(10))
+            return wait_response(timeout)
+        }
+        else
+            return false
+        /*         if (enabled) {
+                    serial.writeString(at + String.fromCharCode(13) + String.fromCharCode(10))
+                    return wait_response(timeout)
+                } else {
+                    return false
+                } */
+    }
+
+
     const OK = String.fromCharCode(13) + String.fromCharCode(10) + "OK" + String.fromCharCode(13) + String.fromCharCode(10)
 
     function wait_response(timeout: number) {
         let read_string: string
-        let i_list = read_list.length
+        i_list = read_list.length
         let start = input.runningTime()
         while (input.runningTime() - start < timeout) {
             read_string = serial.readString()
@@ -43,10 +75,28 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
                     return true
                 }
             }
-            basic.pause(20)
+            basic.pause(20) // ms
         }
         return false
     }
 
+    export enum eAT_commands {
+        //% block="-"
+        none,
+        //% block="AT Test OK"
+        at,
+        //% block="AT+RST Reset"
+        at_rst,
+        //% block="ATE0 Echo off"
+        ate0,
+        //% block="ATE1 Echo on"
+        ate1,
+        //% block="AT+GMR Firmware Version"
+        at_gmr,
+        //% block="AT+CMD? AT Commands"
+        at_cmd,
+        //% block="AT+MQTTCONN? MQTT Status"
+        at_mqttconn
+    }
 
 } // serial.ts
