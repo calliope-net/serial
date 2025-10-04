@@ -18,7 +18,7 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     let i_list: number
 
     //% group="MQTT" subcategory=MQTT
-    //% block="beim Start" weight=9
+    //% block="WLAN beim Start" weight=9
     export function initWLAN() {
         serial.redirect(
             SerialPin.C17,
@@ -32,9 +32,9 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
 
 
     //% group="MQTT" subcategory=MQTT
-    //% block="AT %at timeout %timeout || enabled %enabled" weight=8
-    //% enabled.shadow=toggleYesNo
-    export function at_command(at_command: eAT_commands, timeout: number, enabled = true) {
+    //% block="%at timeout %sekunden Sekunden" weight=8
+    //% sekunden.min=1 sekunden.max=10 sekunden.defl=2
+    export function at_command(at_command: eAT_commands, sekunden: number) {
         let at = ""
         switch (at_command) {
             case eAT_commands.at: { at = "AT"; break }
@@ -48,10 +48,10 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
         }
         if (at.length > 0) {
             serial.writeString(at + String.fromCharCode(13) + String.fromCharCode(10))
-            return wait_response(timeout)
+            return wait_response(sekunden * 1000)
         }
         else
-            return false
+            return at_command == eAT_commands.none_true
         /*         if (enabled) {
                     serial.writeString(at + String.fromCharCode(13) + String.fromCharCode(10))
                     return wait_response(timeout)
@@ -81,8 +81,10 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     }
 
     export enum eAT_commands {
-        //% block="-"
+        //% block="AT (aus - false)"
         none,
+        //% block="AT (aus - true)"
+        none_true,
         //% block="AT Test OK"
         at,
         //% block="AT+RST Reset"
