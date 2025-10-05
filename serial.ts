@@ -22,8 +22,14 @@ SDK version:3.0.5(b29dcd3)
 compile time:Sep 15 2022 20:04:36
 OK
 
+
 Cytron: Grove WiFi 8266 - IoT for micro:bit and beyond https://www.cytron.io/p-grove-wifi-8266-iot-for-microbit-and-beyond
-let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:45)^^SDK version:v3.4-22-g967752e2^^compile time(6800286):Aug  4 2021 17:34:06^^Bin version:2.2.0(Cytron_ESP-12F_WROOM-02)^^^^OK^^"
+AT+GMR (187 Zeichen müssen in serielle Puffergröße für RX passen):
+AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:45)
+SDK version:v3.4-22-g967752e2
+compile time(6800286):Aug 4 2021 17:34:06
+Bin version:2.2.0(Cytron_ESP-12F_WROOM-02)
+OK
 
 
 */
