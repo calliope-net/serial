@@ -9,7 +9,8 @@
         "main.blocks",
         "main.ts",
         "README.md",
-        "serial.ts"
+        "serial.ts",
+        "cytron_at_command_set.ts"
     ],
     "testFiles": [
         "test.ts"

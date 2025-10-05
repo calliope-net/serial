@@ -24,6 +24,7 @@ OK
 
 
 Cytron: Grove WiFi 8266 - IoT for micro:bit and beyond https://www.cytron.io/p-grove-wifi-8266-iot-for-microbit-and-beyond
+AT Commands: https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/index.html
 AT+GMR (187 Zeichen müssen in serielle Puffergröße für RX passen):
 AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:45)
 SDK version:v3.4-22-g967752e2
