@@ -46,7 +46,7 @@ OK
         )
         serial.setTxBufferSize(80)
         serial.setRxBufferSize(200)
-        response_array.length = 0
+        //response_array.length = 0
     }
 
 
