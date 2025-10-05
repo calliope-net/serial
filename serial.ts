@@ -34,8 +34,7 @@ OK
 
 
 */
-    let response_array: string[] = []
-    let response_index: number = 0
+    const response_array: string[] = [] // push in wait_response
 
     //% group="Seriell C16 C17 115200" subcategory="WLAN MQTT"
     //% block="Grove beim Start" weight=9
@@ -47,9 +46,9 @@ OK
         )
         serial.setTxBufferSize(80)
         serial.setRxBufferSize(200)
-        response_array = []
-        response_index = 0
+        response_array.length = 0
     }
+
 
 
     // ========== group="WLAN" subcategory="WLAN MQTT"
@@ -57,6 +56,7 @@ OK
     //% group="WLAN" subcategory="WLAN MQTT"
     //% block="WLAN verbinden SSID %ssid Password %password" 
     export function wifi_connect(ssid: string, password: string) {
+        response_array.length = 0
         if (at_command("AT+CWMODE=1", 1))
             return at_command("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 10) // 10 Sekunden
         else
@@ -64,12 +64,14 @@ OK
     }
 
 
+
     // ========== group="MQTT" subcategory="WLAN MQTT" "+"
 
     //% group="MQTT" subcategory="WLAN MQTT"
     //% block="MQTT Client ID %client_id || Username %username Password %password" weight=9
-    //% host.defl="192.168.8.2" port.defl=1884
+    //% client_id.defl="calliope" username.defl="" password.defl=""
     export function mqtt_client(client_id: string, username = "", password = "") {
+        response_array.length = 0
         // return (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
         return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 5)) // 5 Sekunden
     }
@@ -78,6 +80,7 @@ OK
     //% block="MQTT Client verbinden Host %host || Port %port" weight=8
     //% host.defl="192.168.8.2" port.defl=1883
     export function mqtt_connect(host: string, port = 1883) {
+        response_array.length = 0
         //if (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
         return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
         //else
@@ -88,37 +91,26 @@ OK
     //% block="MQTT Publish Topic %topic Daten %payload" weight=6
     //% topic.defl="topic"
     export function mqtt_publish(topic: string, payload: string) {
+        response_array.length = 0
         return at_command("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0", 5) // 5 Sekunden
     }
 
+    // group="MQTT (ohne Response)" subcategory="WLAN MQTT"
+    // block="MQTT Publish Topic %topic Daten %payload" weight=5
+    // topic.defl="topic"
+    //export function mqtt_publish_no_response(topic: string, payload: string) {
+    //    serial.writeString("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0" + String.fromCharCode(13) + String.fromCharCode(10))
+    //}
 
-
-    //% group="MQTT (ohne Response)" subcategory="WLAN MQTT"
-    //% block="MQTT Publish Topic %topic Daten %payload" weight=5
-    //% topic.defl="topic"
-    export function mqtt_publish_no_response(topic: string, payload: string) {
-        serial.writeString("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0" + String.fromCharCode(13) + String.fromCharCode(10))
-    }
 
 
     // ========== group="AT" subcategory="WLAN MQTT"
 
-    //% group="AT" subcategory="WLAN MQTT"
+    //% group="AT Kommandos" subcategory="WLAN MQTT"
     //% block="%at timeout %sekunden Sekunden" weight=8
     //% at.shadow=serial_eAT
     //% sekunden.min=1 sekunden.max=10 sekunden.defl=2
     export function at_command(at: string, sekunden: number) {
-        /*         let at = ""
-                switch (at_command) {
-                    case eAT_commands.at: { at = "AT"; break }
-                    case eAT_commands.at_rst: { at = "AT+RST"; break }
-                    case eAT_commands.ate0: { at = "ATE0"; break }
-                    case eAT_commands.ate1: { at = "ATE1"; break }
-                    case eAT_commands.at_gmr: { at = "AT+GMR"; break }
-                    case eAT_commands.at_cmd: { at = "AT+CMD?"; break }
-                    case eAT_commands.at_mqttconn: { at = "AT+MQTTCONN?"; break }
-        
-                } */
         if (at == "true")
             return true
         else if (at.length > 0) {
@@ -126,30 +118,30 @@ OK
             return wait_response(sekunden * 1000)
         }
         else
-            return false// at_command == eAT_commands.none_true
-        /*         if (enabled) {
-                    serial.writeString(at + String.fromCharCode(13) + String.fromCharCode(10))
-                    return wait_response(timeout)
-                } else {
-                    return false
-                } */
+            return false
+    }
+
+    //% group="AT Kommandos" subcategory="WLAN MQTT"
+    //% block="AT Response Array" weight=2
+    export function get_response() {
+        return response_array
+    }
+
+    //% group="AT Kommandos" subcategory="WLAN MQTT"
+    //% block="AT Response Array leeren" weight=1
+    export function clear_response() {
+        response_array.length = 0
     }
 
 
 
-
-
-
-
-
-
-
+    // ========== blockHidden=true
 
     const OK = String.fromCharCode(13) + String.fromCharCode(10) + "OK" + String.fromCharCode(13) + String.fromCharCode(10)
 
     function wait_response(timeout_ms: number) {
         let read_string: string
-        response_index = response_array.length
+        //response_index = response_array.length
         let start = input.runningTime()
         while (input.runningTime() - start < timeout_ms) {
             read_string = serial.readString()
@@ -164,14 +156,8 @@ OK
         return false
     }
 
-    //% group="AT" subcategory="WLAN MQTT"
-    //% block="AT Response Array" weight=1
-    export function get_response() {
-        return response_array
-    }
-
     //% blockId=serial_eAT blockHidden=true
-    //% group="AT" subcategory="WLAN MQTT"
+    //% group="AT Kommandos" subcategory="WLAN MQTT"
     //% block="%pAT" weight=3
     export function serial_eAT(pAT: eAT_commands): string {
         switch (pAT) {
