@@ -46,7 +46,7 @@ OK
         )
         serial.setTxBufferSize(80)
         serial.setRxBufferSize(200)
-        //response_array.length = 0
+        clear_response()
     }
 
 
@@ -56,7 +56,7 @@ OK
     //% group="WLAN" subcategory="WLAN MQTT"
     //% block="WLAN verbinden SSID %ssid Password %password" 
     export function wifi_connect(ssid: string, password: string) {
-        response_array.length = 0
+        clear_response()
         if (at_command("AT+CWMODE=1", 1))
             return at_command("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 10) // 10 Sekunden
         else
@@ -71,7 +71,7 @@ OK
     //% block="MQTT Client ID %client_id || Username %username Password %password" weight=9
     //% client_id.defl="calliope" username.defl="" password.defl=""
     export function mqtt_client(client_id: string, username = "", password = "") {
-        response_array.length = 0
+        clear_response()
         // return (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
         return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 5)) // 5 Sekunden
     }
@@ -80,7 +80,7 @@ OK
     //% block="MQTT Client verbinden Host %host || Port %port" weight=8
     //% host.defl="192.168.8.2" port.defl=1883
     export function mqtt_connect(host: string, port = 1883) {
-        response_array.length = 0
+        clear_response()
         //if (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
         return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
         //else
@@ -91,7 +91,7 @@ OK
     //% block="MQTT Publish Topic %topic Daten %payload" weight=6
     //% topic.defl="topic"
     export function mqtt_publish(topic: string, payload: string) {
-        response_array.length = 0
+        clear_response()
         return at_command("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0", 5) // 5 Sekunden
     }
 
@@ -130,7 +130,9 @@ OK
     //% group="AT Kommandos" subcategory="WLAN MQTT"
     //% block="AT Response Array leeren" weight=1
     export function clear_response() {
-        response_array.length = 0
+        // Simulator pxsim_Array_.length_set is not a function
+        if ("€".charCodeAt(0) != 8364)
+            response_array.length = 0
     }
 
 
