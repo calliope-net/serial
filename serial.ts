@@ -27,12 +27,12 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
 
 
 */
-    let read_list: string[] = []
-    let i_list: number
+    let response_array: string[] = []
+    let response_index: number = 0
 
-    //% group="AT" subcategory="WLAN MQTT"
-    //% block="WLAN beim Start" weight=9
-    export function initWLAN() {
+    //% group="Seriell C16 C17 115200" subcategory="WLAN MQTT"
+    //% block="Grove beim Start" weight=9
+    export function init_serial() {
         serial.redirect(
             SerialPin.C17,
             SerialPin.C16,
@@ -40,31 +40,35 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
         )
         serial.setTxBufferSize(80)
         serial.setRxBufferSize(200)
-        read_list = []
+        response_array = []
+        response_index = 0
     }
 
 
     //% group="AT" subcategory="WLAN MQTT"
     //% block="%at timeout %sekunden Sekunden" weight=8
+    //% at.shadow=serial_eAT
     //% sekunden.min=1 sekunden.max=10 sekunden.defl=2
-    export function at_command(at_command: eAT_commands, sekunden: number) {
-        let at = ""
-        switch (at_command) {
-            case eAT_commands.at: { at = "AT"; break }
-            case eAT_commands.at_rst: { at = "AT+RST"; break }
-            case eAT_commands.ate0: { at = "ATE0"; break }
-            case eAT_commands.ate1: { at = "ATE1"; break }
-            case eAT_commands.at_gmr: { at = "AT+GMR"; break }
-            case eAT_commands.at_cmd: { at = "AT+CMD?"; break }
-            case eAT_commands.at_mqttconn: { at = "AT+MQTTCONN?"; break }
-
-        }
-        if (at.length > 0) {
+    export function at_command(at: string, sekunden: number) {
+        /*         let at = ""
+                switch (at_command) {
+                    case eAT_commands.at: { at = "AT"; break }
+                    case eAT_commands.at_rst: { at = "AT+RST"; break }
+                    case eAT_commands.ate0: { at = "ATE0"; break }
+                    case eAT_commands.ate1: { at = "ATE1"; break }
+                    case eAT_commands.at_gmr: { at = "AT+GMR"; break }
+                    case eAT_commands.at_cmd: { at = "AT+CMD?"; break }
+                    case eAT_commands.at_mqttconn: { at = "AT+MQTTCONN?"; break }
+        
+                } */
+        if (at == "true")
+            return true
+        else if (at.length > 0) {
             serial.writeString(at + String.fromCharCode(13) + String.fromCharCode(10))
             return wait_response(sekunden * 1000)
         }
         else
-            return at_command == eAT_commands.none_true
+            return false// at_command == eAT_commands.none_true
         /*         if (enabled) {
                     serial.writeString(at + String.fromCharCode(13) + String.fromCharCode(10))
                     return wait_response(timeout)
@@ -76,14 +80,14 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
 
     const OK = String.fromCharCode(13) + String.fromCharCode(10) + "OK" + String.fromCharCode(13) + String.fromCharCode(10)
 
-    function wait_response(timeout: number) {
+    function wait_response(timeout_ms: number) {
         let read_string: string
-        i_list = read_list.length
+        response_index = response_array.length
         let start = input.runningTime()
-        while (input.runningTime() - start < timeout) {
+        while (input.runningTime() - start < timeout_ms) {
             read_string = serial.readString()
             if (read_string.length > 0) {
-                read_list.push(read_string)
+                response_array.push(read_string)
                 if (read_string.includes(OK)) {
                     return true
                 }
@@ -96,7 +100,24 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     //% group="AT" subcategory="WLAN MQTT"
     //% block="AT Response Array" weight=1
     export function get_response() {
-        return read_list
+        return response_array
+    }
+
+    //% blockId=serial_eAT blockHidden=true
+    //% group="AT" subcategory="WLAN MQTT"
+    //% block="%pAT" weight=3
+    export function serial_eAT(pAT: eAT_commands): string {
+        switch (pAT) {
+            case eAT_commands.none_true: return "true"
+            case eAT_commands.at: return "AT"
+            case eAT_commands.at_rst: return "AT+RST"
+            case eAT_commands.ate0: return "ATE0"
+            case eAT_commands.ate1: return "ATE1"
+            case eAT_commands.at_gmr: return "AT+GMR"
+            case eAT_commands.at_cmd: return "AT+CMD?"
+            case eAT_commands.at_mqttconn: return "AT+MQTTCONN?"
+            default: return ""
+        }
     }
 
     export enum eAT_commands {
