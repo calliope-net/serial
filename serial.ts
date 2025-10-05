@@ -64,19 +64,24 @@ OK
     }
 
 
-    // ========== group="MQTT" subcategory="WLAN MQTT"
-
-
-
+    // ========== group="MQTT" subcategory="WLAN MQTT" "+"
 
     //% group="MQTT" subcategory="WLAN MQTT"
-    //% block="MQTT verbinden Host %host Port %port" weight=8
+    //% block="MQTT Client ID %client_id || Username %username Password %password" weight=9
     //% host.defl="192.168.8.2" port.defl=1884
-    export function mqtt_connect(host: string, port: number) {
-        if (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
-            return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
-        else
-            return false
+    export function mqtt_client(client_id: string, username = "", password = "") {
+        // return (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
+        return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 5)) // 5 Sekunden
+    }
+
+    //% group="MQTT" subcategory="WLAN MQTT"
+    //% block="MQTT Client verbinden Host %host || Port %port" weight=8
+    //% host.defl="192.168.8.2" port.defl=1883
+    export function mqtt_connect(host: string, port = 1883) {
+        //if (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
+        return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
+        //else
+        //    return false
     }
 
     //% group="MQTT" subcategory="WLAN MQTT"
