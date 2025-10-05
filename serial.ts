@@ -70,7 +70,9 @@ OK
     //% group="MQTT" subcategory="WLAN MQTT"
     //% block="MQTT Client ID %client_id || Username %username Password %password" weight=9
     //% client_id.defl="calliope" username.defl="" password.defl=""
-    export function mqtt_client(client_id: string, username = "", password = "") {
+    export function mqtt_client(client_id: string, username?: string, password?: string) {
+        if (!username) username = ""
+        if (!password) password = ""
         clear_response()
         // return (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
         return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 5)) // 5 Sekunden
