@@ -80,6 +80,12 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
         return false
     }
 
+    //% group="MQTT" subcategory=MQTT
+    //% block="Response" weight=1
+    export function get_response() {
+        return read_list
+    }
+
     export enum eAT_commands {
         //% block="AT (aus - false)"
         none,
