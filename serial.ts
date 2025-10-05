@@ -1,16 +1,22 @@
 
 namespace serial { /* serial.ts
 
-Unterstützte Module (WLAN können alle, MQTT kann nur Cytron)
-^^ = CRLF
+Unterstützte Module (WiFi und TCT/IP können alle, MQTT kann nur Cytron)
+
 Seeed Studio: Grove - UART WiFi V2 (ESP8285) https://www.seeedstudio.com/Grove-UART-WiFi-V2-ESP8285.html
-AT+GMR (138 Zeichen) = "AT version:1.6.0.0(Feb  3 2018 12:00:06)^^SDK version:2.2.1(f42c330)^^compile time:Feb 12 2018 16:31:26^^Bin version(Wroom 02):1.6.1^^OK^^"
+Wiki und AT Commands: https://wiki.seeedstudio.com/Grove-UART_Wifi_V2/#basic-at-commands
+AT+GMR (138 Zeichen müssen in serielle Puffergröße für RX passen):
+AT version:1.6.0.0(Feb 3 2018 12:00:06)
+SDK version:2.2.1(f42c330)
+compile time:Feb 12 2018 16:31:26
+Bin version(Wroom 02):1.6.1
+OK
 
 
 SparkFun: WiFi Module - ESP8266 (4MB Flash) https://www.sparkfun.com/wifi-module-esp8266-4mb-flash.html
 Verdrahtung und AT Commands: https://cdn.sparkfun.com/assets/f/e/5/6/f/ESP8266ModuleV2.pdf
 Chip Enable (EN) mit 3V3 verbinden rot, TX gelb, RX weiß
-AT+GMR (109 Zeichen):
+AT+GMR (109 Zeichen müssen in serielle Puffergröße für RX passen):
 AT version:1.7.5.0(Oct 9 2021 09:26:04)
 SDK version:3.0.5(b29dcd3)
 compile time:Sep 15 2022 20:04:36
