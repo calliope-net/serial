@@ -50,8 +50,10 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     //% group="WLAN" subcategory="WLAN MQTT"
     //% block="WLAN verbinden SSID %ssid Password %password" 
     export function wifi_connect(ssid: string, password: string) {
-        at_command("AT+CWMODE=1", 1)
-        at_command("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 10) // 10 Sekunden
+        if (at_command("AT+CWMODE=1", 1))
+            return at_command("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 10) // 10 Sekunden
+        else
+            return false
     }
 
 
@@ -61,8 +63,10 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     //% block="MQTT verbinden Host %host Port %port" weight=8
     //% host.defl="192.168.8.2" port.defl=1884
     export function mqtt_connect(host: string, port: number) {
-        at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5)
-        at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
+        if (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
+            return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
+        else
+            return false
     }
 
     //% group="MQTT" subcategory="WLAN MQTT"
@@ -70,6 +74,15 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     //% topic.defl="topic"
     export function mqtt_publish(topic: string, payload: string) {
         return at_command("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0", 5) // 5 Sekunden
+    }
+
+
+
+    //% group="MQTT (ohne Response)" subcategory="WLAN MQTT"
+    //% block="MQTT Publish Topic %topic Daten %payload" weight=5
+    //% topic.defl="topic"
+    export function mqtt_publish_no_response(topic: string, payload: string) {
+        serial.writeString("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0" + String.fromCharCode(13) + String.fromCharCode(10))
     }
 
 
@@ -160,7 +173,7 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     }
 
     export enum eAT_commands {
-        //% block="AT (aus - false)"
+        //% block="AT -"
         none,
         //% block="AT (aus - true)"
         none_true,
