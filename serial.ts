@@ -8,6 +8,11 @@ AT+GMR (138 Zeichen) = "AT version:1.6.0.0(Feb  3 2018 12:00:06)^^SDK version:2.
 
 SparkFun: WiFi Module - ESP8266 (4MB Flash) https://www.sparkfun.com/wifi-module-esp8266-4mb-flash.html
 AT-GMR (109 Zeichen= = "AT version:1.7.5.0(Okt  9 2021 09:26:04)^^SDK version:3.0.5(b29dsd3)^^compile time:Sep 15 2022 20:04:36^^OK^^"
+AT+GMR (109 Zeichen):
+AT version:1.7.5.0(Oct 9 2021 09:26:04)
+SDK version:3.0.5(b29dcd3)
+compile time:Sep 15 2022 20:04:36
+OK
 
 Cytron: Grove WiFi 8266 - IoT for micro:bit and beyond https://www.cytron.io/p-grove-wifi-8266-iot-for-microbit-and-beyond
 let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:45)^^SDK version:v3.4-22-g967752e2^^compile time(6800286):Aug  4 2021 17:34:06^^Bin version:2.2.0(Cytron_ESP-12F_WROOM-02)^^^^OK^^"
@@ -17,7 +22,7 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     let read_list: string[] = []
     let i_list: number
 
-    //% group="MQTT" subcategory=MQTT
+    //% group="AT" subcategory="WLAN MQTT"
     //% block="WLAN beim Start" weight=9
     export function initWLAN() {
         serial.redirect(
@@ -31,7 +36,7 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
     }
 
 
-    //% group="MQTT" subcategory=MQTT
+    //% group="AT" subcategory="WLAN MQTT"
     //% block="%at timeout %sekunden Sekunden" weight=8
     //% sekunden.min=1 sekunden.max=10 sekunden.defl=2
     export function at_command(at_command: eAT_commands, sekunden: number) {
@@ -80,8 +85,8 @@ let GMR_CYTRON_187 = "AT version:2.2.0.0(b097cdf - ESP8266 - Jun 17 2021 12:57:4
         return false
     }
 
-    //% group="MQTT" subcategory=MQTT
-    //% block="Response" weight=1
+    //% group="AT" subcategory="WLAN MQTT"
+    //% block="AT Response Array" weight=1
     export function get_response() {
         return read_list
     }
