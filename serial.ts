@@ -75,7 +75,7 @@ OK
         if (!password) password = ""
         clear_response()
         // return (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
-        return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 5)) // 5 Sekunden
+        return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 2)) // 2 Sekunden
     }
 
     //% group="MQTT" subcategory="WLAN MQTT"
