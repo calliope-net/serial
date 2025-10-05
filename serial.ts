@@ -34,7 +34,7 @@ OK
 
 
 */
-    const response_array: string[] = [] // push in wait_response
+    let response_array: string[] = [] // push in wait_response
 
     //% group="Seriell C16 C17 115200" subcategory="WLAN MQTT"
     //% block="Grove beim Start" weight=9
@@ -131,8 +131,9 @@ OK
     //% block="AT Response Array leeren" weight=1
     export function clear_response() {
         // Simulator pxsim_Array_.length_set is not a function
-        if ("€".charCodeAt(0) != 8364)
-            response_array.length = 0
+        //if ("€".charCodeAt(0) != 8364)
+        //response_array.length = 0
+        response_array = []
     }
 
 
