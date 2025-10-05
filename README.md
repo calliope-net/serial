@@ -3,7 +3,11 @@
 
 
 ```
-Response Array Lnge 96
+Command:
+AT+CMD?
+Response (94 Zeilen):
++CMD:<index>,<AT command name>,<support test command>,<support query command>,<support set command>,<support execute command>
+
 AT+CMD?
 +CMD:0,"AT",0,0,0,1
 +CMD:1,"ATE0",0,0,0,1
