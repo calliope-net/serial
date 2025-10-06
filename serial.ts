@@ -32,12 +32,13 @@ compile time(6800286):Aug 4 2021 17:34:06
 Bin version:2.2.0(Cytron_ESP-12F_WROOM-02)
 OK
 
-
+Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
 */
-    let response_array: string[] = [] // push in wait_response
+    let q_response_array: string[] = [] // push in wait_response, max. Länge = 10
+    let q_response_index = 0
 
     //% group="Seriell C16 C17 115200" subcategory="WLAN MQTT"
-    //% block="Grove beim Start" weight=9
+    //% block="beim Start Grove RX/TX" weight=9
     export function init_serial() {
         serial.redirect(
             SerialPin.C17,
@@ -56,7 +57,7 @@ OK
     //% group="WLAN" subcategory="WLAN MQTT"
     //% block="WLAN verbinden SSID %ssid Password %password" 
     export function wifi_connect(ssid: string, password: string) {
-        clear_response()
+        //clear_response()
         if (at_command("AT+CWMODE=1", 1))
             return at_command("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 10) // 10 Sekunden
         else
@@ -73,7 +74,7 @@ OK
     export function mqtt_client(client_id: string, username?: string, password?: string) {
         if (!username) username = ""
         if (!password) password = ""
-        clear_response()
+        //clear_response()
         // return (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
         return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 2)) // 2 Sekunden
     }
@@ -82,7 +83,7 @@ OK
     //% block="MQTT Client verbinden Host %host || Port %port" weight=8
     //% host.defl="192.168.8.2" port.defl=1883
     export function mqtt_connect(host: string, port = 1883) {
-        clear_response()
+        //clear_response()
         //if (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
         return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
         //else
@@ -93,7 +94,7 @@ OK
     //% block="MQTT Publish Topic %topic Daten %payload" weight=6
     //% topic.defl="topic"
     export function mqtt_publish(topic: string, payload: string) {
-        clear_response()
+        //clear_response()
         return at_command("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0", 5) // 5 Sekunden
     }
 
@@ -124,10 +125,17 @@ OK
     }
 
     //% group="AT Kommandos" subcategory="WLAN MQTT"
-    //% block="AT Response Array" weight=2
+    //% block="AT Response Array" weight=3
     export function get_response() {
-        return response_array
+        return q_response_array
     }
+
+    //% group="AT Kommandos" subcategory="WLAN MQTT"
+    //% block="AT Response Index" weight=2
+    export function get_response_index() {
+        return q_response_index
+    }
+
 
     //% group="AT Kommandos" subcategory="WLAN MQTT"
     //% block="AT Response Array leeren" weight=1
@@ -135,7 +143,8 @@ OK
         // Simulator pxsim_Array_.length_set is not a function
         //if ("€".charCodeAt(0) != 8364)
         //response_array.length = 0
-        response_array = []
+        q_response_array = []
+        q_response_index = 0
     }
 
 
@@ -146,17 +155,21 @@ OK
 
     function wait_response(timeout_ms: number) {
         let read_string: string
-        //response_index = response_array.length
+        q_response_index = q_response_array.length
         let start = input.runningTime()
         while (input.runningTime() - start < timeout_ms) {
             read_string = serial.readString()
             if (read_string.length > 0) {
-                response_array.push(read_string)
+                if (q_response_array.length > 10) {
+                    q_response_array.removeAt(0)
+                    q_response_index--
+                }
+                q_response_array.push(read_string)
                 if (read_string.includes(OK)) {
                     return true
                 }
             }
-            basic.pause(20) // ms
+            basic.pause(50) // ms
         }
         return false
     }
