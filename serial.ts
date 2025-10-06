@@ -160,10 +160,14 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
         while (input.runningTime() - start < timeout_ms) {
             read_string = serial.readString()
             if (read_string.length > 0) {
-                if (q_response_array.length > 10) {
+                while (q_response_array.length > 9) {
                     q_response_array.removeAt(0)
                     q_response_index--
                 }
+                /*  if (q_response_array.length > 9) {
+                     q_response_array.removeAt(0)
+                     q_response_index--
+                 } */
                 q_response_array.push(read_string)
                 if (read_string.includes(OK)) {
                     return true
