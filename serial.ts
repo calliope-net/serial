@@ -191,6 +191,7 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
             case eAT_commands.at_gmr: return "AT+GMR"
             case eAT_commands.at_cmd: return "AT+CMD?"
             case eAT_commands.at_mqttconn: return "AT+MQTTCONN?"
+            case eAT_commands.at_mqttclean: return "AT+MQTTCLEAN=0"
             default: return ""
         }
     }
@@ -213,7 +214,9 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
         //% block="AT+CMD? AT Commands"
         at_cmd,
         //% block="AT+MQTTCONN? MQTT Status"
-        at_mqttconn
+        at_mqttconn,
+        //% block="AT+MQTTCLEAN=0 Close MQTT"
+        at_mqttclean
     }
 
 } // serial.ts
