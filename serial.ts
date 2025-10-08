@@ -113,12 +113,18 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
     //% inlineInputMode=inline
     export function string_join(sep: string, t1: any, t2: any, t3?: any, t4?: any, t5?: any, t6?: any) {
         let list: string[] = []
-        if (t1) list.push(convertToText(t1))
-        if (t2) list.push(convertToText(t2))
-        if (t3) list.push(convertToText(t3))
-        if (t4) list.push(convertToText(t4))
-        if (t5) list.push(convertToText(t5))
-        if (t6) list.push(convertToText(t6))
+        if (t1 || t1 === 0) { // Antwort von Copilot:
+            // Hier landest du, wenn x ≠ "" ist – 
+            // also bei 0, bei nicht-leeren Strings, bei Objekten, true, …
+            list.push(convertToText(t1))
+        } else {
+            // x ist entweder "" oder ein anderer falsy-Wert (undefined, null, false, NaN)
+        }
+        if (t2 || t2 === 0) list.push(convertToText(t2))
+        if (t3 || t3 === 0) list.push(convertToText(t3))
+        if (t4 || t4 === 0) list.push(convertToText(t4))
+        if (t5 || t5 === 0) list.push(convertToText(t5))
+        if (t6 || t6 === 0) list.push(convertToText(t6))
 
         return list.join(sep)
     }
