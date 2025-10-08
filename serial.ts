@@ -105,6 +105,33 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
 
 
 
+    // ========== group="Daten mit ; trennen (Komma nicht erlaubt)" subcategory="WLAN MQTT IoT"
+
+    //% group="Daten mit ; trennen (Komma nicht erlaubt)" subcategory="WLAN MQTT IoT"
+    //% block="%sep %t1 %t2 || %t3 %t4 %t5 %t6" weight=4
+    //% sep.defl=";"
+    //% inlineInputMode=inline
+    export function string_join(sep: string, t1: any, t2: any, t3?: any, t4?: any, t5?: any, t6?: any) {
+        let list: string[]
+        if (t1) list.push(convertToText(t1))
+        if (t2) list.push(convertToText(t2))
+        if (t3) list.push(convertToText(t3))
+        if (t4) list.push(convertToText(t4))
+        if (t5) list.push(convertToText(t5))
+        if (t6) list.push(convertToText(t6))
+
+        return list.join(sep)
+    }
+
+    //% group="Daten mit ; trennen (Komma nicht erlaubt)" subcategory="WLAN MQTT IoT"
+    //% block="%sep %list" weight=3
+    //% sep.defl=";"
+    export function array_join(sep: string, list: string[]) {
+        return list.join(sep)
+    }
+
+
+
     // ========== group="AT Kommandos" subcategory="WLAN MQTT IoT"
 
     //% group="AT Kommandos" subcategory="WLAN MQTT IoT"
