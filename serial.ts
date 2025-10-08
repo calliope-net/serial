@@ -37,8 +37,8 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
     let q_response_array: string[] = [] // push in wait_response, max. Länge = 10
     let q_response_index = 0
 
-    //% group="Seriell C16 C17 115200" subcategory="WLAN MQTT"
-    //% block="beim Start Grove RX/TX" weight=9
+    //% group="Cytron 'Grove WiFi 8266' for micro:bit and beyond" subcategory="WLAN MQTT IoT"
+    //% block="beim Start Grove RX/TX"
     export function init_serial() {
         serial.redirect(
             SerialPin.C17,
@@ -52,65 +52,63 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
 
 
 
-    // ========== group="WLAN" subcategory="WLAN MQTT"
+    // ========== group="WLAN (gibt true zurück, wenn Response OK)" subcategory="WLAN MQTT IoT"
 
-    //% group="WLAN" subcategory="WLAN MQTT"
-    //% block="WLAN verbinden SSID %ssid Password %password" 
-    export function wifi_connect(ssid: string, password: string) {
+    //% group="WLAN (gibt true zurück, wenn Response OK)" subcategory="WLAN MQTT IoT"
+    //% block="WLAN verbinden SSID %ssid Password %password || Timeout %sekunden s"
+    //% sekunden.min=1 sekunden.max=10 sekunden.defl=10
+    export function wifi_connect(ssid: string, password: string, sekunden = 10) {
         //clear_response()
         if (at_command("AT+CWMODE=1", 1))
-            return at_command("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 10) // 10 Sekunden
+            return at_command("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", sekunden) // 10 Sekunden
         else
             return false
     }
 
 
 
-    // ========== group="MQTT" subcategory="WLAN MQTT" "+"
+    // ========== group="MQTT (hat nur Cytron in der 8266 Firmware)" subcategory="WLAN MQTT IoT"
 
-    //% group="MQTT" subcategory="WLAN MQTT"
-    //% block="MQTT Client ID %client_id || Username %username Password %password" weight=9
+    //% group="MQTT (hat nur Cytron in der 8266 Firmware)" subcategory="WLAN MQTT IoT"
+    //% block="MQTT Client ID %client_id || Username %username Password %password Timeout %sekunden s" weight=9
     //% client_id.defl="calliope" username.defl="" password.defl=""
-    export function mqtt_client(client_id: string, username?: string, password?: string) {
+    //% sekunden.min=1 sekunden.max=10 sekunden.defl=2
+    //% inlineInputMode=inline
+    export function mqtt_client(client_id: string, username?: string, password?: string, sekunden = 2) {
         if (!username) username = ""
         if (!password) password = ""
         //clear_response()
         // return (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
-        return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", 2)) // 2 Sekunden
+        return (at_command("AT+MQTTUSERCFG=0,1,\"" + client_id + "\",\"" + username + "\",\"" + password + "\",0,0,\"\"", sekunden)) // 2 Sekunden
     }
 
-    //% group="MQTT" subcategory="WLAN MQTT"
-    //% block="MQTT Client verbinden Host %host || Port %port" weight=8
+    //% group="MQTT (hat nur Cytron in der 8266 Firmware)" subcategory="WLAN MQTT IoT"
+    //% block="MQTT Client verbinden Host %host || Port %port Timeout %sekunden s" weight=8
     //% host.defl="192.168.8.2" port.defl=1883
-    export function mqtt_connect(host: string, port = 1883) {
+    //% sekunden.min=1 sekunden.max=10 sekunden.defl=5
+    export function mqtt_connect(host: string, port = 1883, sekunden = 5) {
         //clear_response()
         //if (at_command("AT+MQTTUSERCFG=0,1,\"calliope\",\"\",\"\",0,0,\"\"", 5))
-        return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", 5) // 5 Sekunden
+        return at_command("AT+MQTTCONN=0,\"" + host + "\"," + port + ",0", sekunden) // 5 Sekunden
         //else
         //    return false
     }
 
-    //% group="MQTT" subcategory="WLAN MQTT"
-    //% block="MQTT Publish Topic %topic Daten %payload" weight=6
+    //% group="MQTT (hat nur Cytron in der 8266 Firmware)" subcategory="WLAN MQTT IoT"
+    //% block="MQTT Publish Topic %topic Daten %payload || Timeout %sekunden s" weight=6
     //% topic.defl="topic"
-    export function mqtt_publish(topic: string, payload: string) {
+    //% sekunden.min=1 sekunden.max=10 sekunden.defl=5
+    export function mqtt_publish(topic: string, payload: string, sekunden = 5) {
         //clear_response()
-        return at_command("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0", 5) // 5 Sekunden
+        return at_command("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0", sekunden) // 5 Sekunden
     }
 
-    // group="MQTT (ohne Response)" subcategory="WLAN MQTT"
-    // block="MQTT Publish Topic %topic Daten %payload" weight=5
-    // topic.defl="topic"
-    //export function mqtt_publish_no_response(topic: string, payload: string) {
-    //    serial.writeString("AT+MQTTPUB=0,\"" + topic + "\",\"" + payload + "\",1,0" + String.fromCharCode(13) + String.fromCharCode(10))
-    //}
 
 
+    // ========== group="AT Kommandos" subcategory="WLAN MQTT IoT"
 
-    // ========== group="AT" subcategory="WLAN MQTT"
-
-    //% group="AT Kommandos" subcategory="WLAN MQTT"
-    //% block="%at timeout %sekunden Sekunden" weight=8
+    //% group="AT Kommandos" subcategory="WLAN MQTT IoT"
+    //% block="%at Timeout %sekunden Sekunden" weight=8
     //% at.shadow=serial_eAT
     //% sekunden.min=1 sekunden.max=10 sekunden.defl=2
     export function at_command(at: string, sekunden: number) {
@@ -124,20 +122,20 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
             return false
     }
 
-    //% group="AT Kommandos" subcategory="WLAN MQTT"
+    //% group="AT Kommandos" subcategory="WLAN MQTT IoT"
     //% block="AT Response Array" weight=3
     export function get_response() {
         return q_response_array
     }
 
-    //% group="AT Kommandos" subcategory="WLAN MQTT"
+    //% group="AT Kommandos" subcategory="WLAN MQTT IoT"
     //% block="AT Response Index" weight=2
     export function get_response_index() {
         return q_response_index
     }
 
 
-    //% group="AT Kommandos" subcategory="WLAN MQTT"
+    //% group="AT Kommandos" subcategory="WLAN MQTT IoT" deprecated=true
     //% block="AT Response Array leeren" weight=1
     export function clear_response() {
         // Simulator pxsim_Array_.length_set is not a function
@@ -179,7 +177,7 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
     }
 
     //% blockId=serial_eAT blockHidden=true
-    //% group="AT Kommandos" subcategory="WLAN MQTT"
+    //% group="AT Kommandos" subcategory="WLAN MQTT IoT"
     //% block="%pAT" weight=3
     export function serial_eAT(pAT: eAT_commands): string {
         switch (pAT) {
