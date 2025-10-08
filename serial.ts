@@ -112,7 +112,7 @@ Lutz Elßner, Freiberg, Oktober 2025, lutz@elssner.net
     //% sep.defl=";"
     //% inlineInputMode=inline
     export function string_join(sep: string, t1: any, t2: any, t3?: any, t4?: any, t5?: any, t6?: any) {
-        let list: string[]
+        let list: string[] = []
         if (t1) list.push(convertToText(t1))
         if (t2) list.push(convertToText(t2))
         if (t3) list.push(convertToText(t3))
