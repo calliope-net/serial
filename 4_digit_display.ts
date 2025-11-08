@@ -20,7 +20,7 @@ namespace serial { /* 4_digit_display.ts
         return display
     }
 
-
+   
     // ========== class TM1637
 
     export class TM1637 {
@@ -30,6 +30,21 @@ namespace serial { /* 4_digit_display.ts
         pointFlag: boolean
         buf: Buffer
 
+
+        //% group="hexadezimal" subcategory="4-Digit Display"
+        //% block="%Display Zahl 0..FFFF anzeigen %hex_string || %display0" weight=9
+        display_hex(hex_string: string, display0 = false) {
+            let digits: number[] = display0 ? [0, 0, 0, 0] : [0x3f, 0x3f, 0x3f, 0x3f]
+            for (let i = 0; i < hex_string.length; i++) {
+                digits.push(parseInt(hex_string.charAt(i), 16))
+            }
+            basic.showNumber(digits.length)
+          
+            this.ziffer_anzeigen(digits.pop(), 3) // Einer
+            this.ziffer_anzeigen(digits.pop(), 2)
+            this.ziffer_anzeigen(digits.pop(), 1)
+            this.ziffer_anzeigen(digits.pop(), 0)
+        }
 
         // ========== group="4-Ziffern Display" subcategory="4-Digit Display"
 
@@ -158,10 +173,10 @@ namespace serial { /* 4_digit_display.ts
         point(point: boolean) {
             this.pointFlag = point;
 
-          /*   this.ziffer_anzeigen(this.buf[0], 0x00);
-            this.ziffer_anzeigen(this.buf[1], 0x01);
-            this.ziffer_anzeigen(this.buf[2], 0x02);
-            this.ziffer_anzeigen(this.buf[3], 0x03); */
+            /*   this.ziffer_anzeigen(this.buf[0], 0x00);
+              this.ziffer_anzeigen(this.buf[1], 0x01);
+              this.ziffer_anzeigen(this.buf[2], 0x02);
+              this.ziffer_anzeigen(this.buf[3], 0x03); */
         }
 
 
@@ -197,26 +212,25 @@ namespace serial { /* 4_digit_display.ts
             pins.digitalWritePin(this.dataPin, 1);
         }
 
-        private convert_7segment(hex_0_15: number, doppelpunkt: boolean) {
-          //  let seg_data = doppelpunkt ? 0x80 : 0x00
-            return TubeTab[hex_0_15] | (doppelpunkt ? 0x80 : 0x00)
+        private convert_7segment(hex_0_15: number, punkt: boolean) { // Punkt rechts neben der Ziffer; Doppelpunkt nur bei Ziffer .1:..
+            return TubeTab[hex_0_15] | (punkt ? 0x80 : 0x00)
         }
 
-      /*   private coding(ziffer_0_9: number): number {
-            let pointData = 0;
-
-            if (this.pointFlag)
-                pointData = 0x80 // Doppelpunkt
-            //else //if (this.pointFlag == false)
-            //    pointData = 0
-
-            if (ziffer_0_9 == 0x7f)
-                ziffer_0_9 = 0x00 + pointData;
-            else
-                ziffer_0_9 = TubeTab[ziffer_0_9] + pointData;
-
-            return ziffer_0_9;
-        } */
+        /*   private coding(ziffer_0_9: number): number {
+              let pointData = 0;
+  
+              if (this.pointFlag)
+                  pointData = 0x80 // Doppelpunkt
+              //else //if (this.pointFlag == false)
+              //    pointData = 0
+  
+              if (ziffer_0_9 == 0x7f)
+                  ziffer_0_9 = 0x00 + pointData;
+              else
+                  ziffer_0_9 = TubeTab[ziffer_0_9] + pointData;
+  
+              return ziffer_0_9;
+          } */
 
     }
 
