@@ -8,16 +8,16 @@ namespace serial { /* 4_digit_display.ts
     //% clkPin.defl=DigitalPin.C16 dataPin.defl=DigitalPin.C17
     //% blockSetVariable=Display
     export function createDisplay(clkPin: DigitalPin, dataPin: DigitalPin): TM1637 {
-        let display = new TM1637();
+        let display = new TM1637()
 
-        display.buf = pins.createBuffer(4);
-        display.clkPin = clkPin;
-        display.dataPin = dataPin;
-        display.brightnessLevel = 0;
-        display.pointFlag = false;
-        display.clear();
+        display.buf = pins.createBuffer(4)
+        display.clkPin = clkPin
+        display.dataPin = dataPin
+        display.brightnessLevel = 5
+        display.pointFlag = false
+        display.clear()
 
-        return display;
+        return display
     }
 
 
@@ -40,85 +40,85 @@ namespace serial { /* 4_digit_display.ts
             let compare_001: number = dispData % 1000;
 
             if (dispData < 10) {
-                this.bit(dispData, 3);
-                this.bit(0x7f, 2);
-                this.bit(0x7f, 1);
-                this.bit(0x7f, 0);
+                this.ziffer_anzeigen(dispData, 3) // Einer
+                this.ziffer_anzeigen(0x7f, 2) // 0-1-2-aus
+                this.ziffer_anzeigen(0x7f, 1)
+                this.ziffer_anzeigen(0x7f, 0)
             }
             else if (dispData < 100) {
-                this.bit(dispData % 10, 3);
+                this.ziffer_anzeigen(dispData % 10, 3) // Einer
                 if (dispData > 90) {
-                    this.bit(9, 2);
+                    this.ziffer_anzeigen(9, 2)
                 } else {
-                    this.bit(Math.floor(dispData / 10) % 10, 2);
+                    this.ziffer_anzeigen(Math.floor(dispData / 10) % 10, 2) // Zehner
                 }
 
-                this.bit(0x7f, 1);
-                this.bit(0x7f, 0);
+                this.ziffer_anzeigen(0x7f, 1) // 0-1-aus
+                this.ziffer_anzeigen(0x7f, 0)
             }
             else if (dispData < 1000) {
-                this.bit(dispData % 10, 3);
+                this.ziffer_anzeigen(dispData % 10, 3) // Einer
                 if (compare_01 > 90) {
-                    this.bit(9, 2);
+                    this.ziffer_anzeigen(9, 2)
                 } else {
-                    this.bit(Math.floor(dispData / 10) % 10, 2);
+                    this.ziffer_anzeigen(Math.floor(dispData / 10) % 10, 2) // Zehner
                 }
                 if (compare_001 > 900) {
-                    this.bit(9, 1);
+                    this.ziffer_anzeigen(9, 1)
                 } else {
-                    this.bit(Math.floor(dispData / 100) % 10, 1);
+                    this.ziffer_anzeigen(Math.floor(dispData / 100) % 10, 1) // Hunderter
                 }
-                this.bit(0x7f, 0);
+                this.ziffer_anzeigen(0x7f, 0) // 0-aus
             }
             else if (dispData < 10000) {
-                this.bit(dispData % 10, 3);
+                this.ziffer_anzeigen(dispData % 10, 3) // Einer
                 if (compare_01 > 90) {
-                    this.bit(9, 2);
+                    this.ziffer_anzeigen(9, 2)
                 } else {
-                    this.bit(Math.floor(dispData / 10) % 10, 2);
+                    this.ziffer_anzeigen(Math.floor(dispData / 10) % 10, 2) // Zehner
                 }
                 if (compare_001 > 900) {
-                    this.bit(9, 1);
+                    this.ziffer_anzeigen(9, 1)
                 } else {
-                    this.bit(Math.floor(dispData / 100) % 10, 1);
+                    this.ziffer_anzeigen(Math.floor(dispData / 100) % 10, 1) // Hunderter
                 }
                 if (dispData > 9000) {
-                    this.bit(9, 0);
+                    this.ziffer_anzeigen(9, 0)
                 } else {
-                    this.bit(Math.floor(dispData / 1000) % 10, 0);
+                    this.ziffer_anzeigen(Math.floor(dispData / 1000) % 10, 0) // Tausender
                 }
             }
             else {
-                this.bit(9, 3);
-                this.bit(9, 2);
-                this.bit(9, 1);
-                this.bit(9, 0);
+                this.ziffer_anzeigen(9, 3);
+                this.ziffer_anzeigen(9, 2);
+                this.ziffer_anzeigen(9, 1);
+                this.ziffer_anzeigen(9, 0);
             }
         }
 
 
         //% group="dezimal" subcategory="4-Digit Display"
-        //% block="%Display Ziffer 0..9 anzeigen %dispData an Stelle %bitAddr" weight=7
+        //% block="%Display Ziffer 0..9 anzeigen %dispData an Stelle %stelle" weight=7
         //% dispData.min=0 dispData.max=9
-        // bitAddr.min=0 bitAddr.max=3
-        //% bitAddr.shadow=serial_eZiffer
-        bit(dispData: number, bitAddr: number) {
-            if ((dispData == 0x7f) || ((dispData <= 9) && (bitAddr <= 3))) {
+        // stelle.min=0 stelle.max=3
+        //% stelle.shadow=serial_eZiffer
+        ziffer_anzeigen(ziffer_0_9: number, stelle_0_3: number) {
+            if ((ziffer_0_9 == 0x7f) || ((ziffer_0_9 <= 9) && (stelle_0_3 <= 3))) {
                 let segData = 0;
 
-                segData = this.coding(dispData);
+                segData = this.coding(ziffer_0_9);
                 this.start();
                 this.writeByte(0x44);
                 this.stop();
                 this.start();
-                this.writeByte(bitAddr | 0xc0);
+                this.writeByte(stelle_0_3 | 0xc0);
                 this.writeByte(segData);
                 this.stop();
                 this.start();
                 this.writeByte(0x88 + this.brightnessLevel);
                 this.stop();
 
-                this.buf[bitAddr] = dispData;
+                this.buf[stelle_0_3] = ziffer_0_9 // nur merken für Helligkeit und Doppelpunkt
             }
         }
 
@@ -131,10 +131,10 @@ namespace serial { /* 4_digit_display.ts
         //% group="Grove - 4-Digit Display" subcategory="4-Digit Display"
         //% block="%Display löschen" weight=4
         clear() {
-            this.bit(0x7f, 0x00);
-            this.bit(0x7f, 0x01);
-            this.bit(0x7f, 0x02);
-            this.bit(0x7f, 0x03);
+            this.ziffer_anzeigen(0x7f, 0x00);
+            this.ziffer_anzeigen(0x7f, 0x01);
+            this.ziffer_anzeigen(0x7f, 0x02);
+            this.ziffer_anzeigen(0x7f, 0x03);
         }
 
 
@@ -143,10 +143,10 @@ namespace serial { /* 4_digit_display.ts
         //% level.min=0 level.max=7 level.defl=5
         set(level: number) {
             this.brightnessLevel = level;
-            this.bit(this.buf[0], 0x00);
-            this.bit(this.buf[1], 0x01);
-            this.bit(this.buf[2], 0x02);
-            this.bit(this.buf[3], 0x03);
+            this.ziffer_anzeigen(this.buf[0], 0x00);
+            this.ziffer_anzeigen(this.buf[1], 0x01);
+            this.ziffer_anzeigen(this.buf[2], 0x02);
+            this.ziffer_anzeigen(this.buf[3], 0x03);
         }
 
 
@@ -158,10 +158,10 @@ namespace serial { /* 4_digit_display.ts
         point(point: boolean) {
             this.pointFlag = point;
 
-            this.bit(this.buf[0], 0x00);
-            this.bit(this.buf[1], 0x01);
-            this.bit(this.buf[2], 0x02);
-            this.bit(this.buf[3], 0x03);
+            this.ziffer_anzeigen(this.buf[0], 0x00);
+            this.ziffer_anzeigen(this.buf[1], 0x01);
+            this.ziffer_anzeigen(this.buf[2], 0x02);
+            this.ziffer_anzeigen(this.buf[3], 0x03);
         }
 
 
@@ -169,11 +169,13 @@ namespace serial { /* 4_digit_display.ts
 
         private writeByte(wrData: number) {
             for (let i = 0; i < 8; i++) {
-                pins.digitalWritePin(this.clkPin, 0);
-                if (wrData & 0x01) pins.digitalWritePin(this.dataPin, 1);
-                else pins.digitalWritePin(this.dataPin, 0);
-                wrData >>= 1;
-                pins.digitalWritePin(this.clkPin, 1);
+                pins.digitalWritePin(this.clkPin, 0)
+                if (wrData & 0x01)
+                    pins.digitalWritePin(this.dataPin, 1)
+                else
+                    pins.digitalWritePin(this.dataPin, 0)
+                wrData >>= 1
+                pins.digitalWritePin(this.clkPin, 1)
             }
 
             pins.digitalWritePin(this.clkPin, 0); // Wait for ACK
