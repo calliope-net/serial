@@ -4,6 +4,33 @@ namespace serial { /* 4_digit_display.ts
 */
 
 
+    /**
+     * Create a new driver Grove - 4-Digit Display
+     * @param clkPin value of clk pin number
+     * @param dataPin value of data pin number
+     */
+    //% group="Grove - 4-Digit Display" subcategory="4-Digit Display"
+    //% block="Pins: Takt %clkPin Daten %dataPin"
+    // blockId=grove_tm1637_create 
+    // clkPin.fieldEditor="gridpicker" clkPin.fieldOptions.columns=4
+    // clkPin.fieldOptions.tooltips="false" clkPin.fieldOptions.width="250"
+    // dataPin.fieldEditor="gridpicker" dataPin.fieldOptions.columns=4
+    //% clkPin.defl=DigitalPin.C16 dataPin.defl=DigitalPin.C17
+    // dataPin.fieldOptions.tooltips="false" dataPin.fieldOptions.width="250"
+    //% blockSetVariable=Display
+    export function createDisplay(clkPin: DigitalPin, dataPin: DigitalPin): TM1637 {
+        let display = new TM1637();
+
+        display.buf = pins.createBuffer(4);
+        display.clkPin = clkPin;
+        display.dataPin = dataPin;
+        display.brightnessLevel = 0;
+        display.pointFlag = false;
+        display.clear();
+
+        return display;
+    }
+
 
 
     export class TM1637 {
@@ -53,13 +80,9 @@ namespace serial { /* 4_digit_display.ts
             return dispData;
         }
 
-        /**
-         * Show a 4 digits number on display
-         * @param dispData value of number
-         */
-
-        //% blockId=grove_tm1637_display_number block="%4Digit|show number|%dispData"
-        //% group="4-Digit"
+        //% group="4-Digit" subcategory="4-Digit Display"
+        //% block="%Display Zahl anzeigen %dispData"
+        // blockId=grove_tm1637_display_number 
         show(dispData: number) {
             let compare_01: number = dispData % 100;
             let compare_001: number = dispData % 1000;
@@ -125,9 +148,9 @@ namespace serial { /* 4_digit_display.ts
          * Set the brightness level of display at from 0 to 7
          * @param level value of brightness light level
          */
-        //% blockId=grove_tm1637_set_display_level block="%4Digit|brightness level to|%level"
+        //% blockId=grove_tm1637_set_display_level block="%Display|brightness level to|%level"
         //% level.min=0 level.max=7
-        //% group="4-Digit"
+        //% group="4-Digit" subcategory="4-Digit Display"
         set(level: number) {
             this.brightnessLevel = level;
             this.bit(this.buf[0], 0x00);
@@ -141,10 +164,10 @@ namespace serial { /* 4_digit_display.ts
          * @param dispData value of number
          * @param bitAddr value of bit number
          */
-        //% blockId=grove_tm1637_display_bit block="%4Digit|show single number|%dispData|at digit|%bitAddr"
+        //% blockId=grove_tm1637_display_bit block="%Display|show single number|%dispData|at digit|%bitAddr"
         //% dispData.min=0 dispData.max=9
         //% bitAddr.min=0 bitAddr.max=3
-        //% group="4-Digit"
+        //% group="4-Digit" subcategory="4-Digit Display"
         bit(dispData: number, bitAddr: number) {
             if ((dispData == 0x7f) || ((dispData <= 9) && (bitAddr <= 3))) {
                 let segData = 0;
@@ -169,8 +192,8 @@ namespace serial { /* 4_digit_display.ts
          * Turn on or off the colon point on Grove - 4-Digit Display
          * @param pointEn value of point switch
          */
-        //% blockId=grove_tm1637_display_point block="%4Digit|turn|%point|colon point"
-        //% group="4-Digit"  point.shadow="toggleOnOff"
+        //% blockId=grove_tm1637_display_point block="%Display|turn|%point|colon point"
+        //% group="4-Digit"  point.shadow="toggleOnOff" subcategory="4-Digit Display"
         point(point: boolean) {
             this.pointFlag = point;
 
@@ -183,8 +206,8 @@ namespace serial { /* 4_digit_display.ts
         /**
          * Clear the display
          */
-        //% blockId=grove_tm1637_display_clear block="%4Digit|clear"
-        //% group="4-Digit"
+        //% blockId=grove_tm1637_display_clear block="%Display|clear"
+        //% group="4-Digit" subcategory="4-Digit Display"
         clear() {
             this.bit(0x7f, 0x00);
             this.bit(0x7f, 0x01);
