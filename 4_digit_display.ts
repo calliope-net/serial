@@ -36,8 +36,8 @@ namespace serial { /* 4_digit_display.ts
         //% group="dezimal" subcategory="4-Digit Display"
         //% block="%Display Zahl 0..9999 anzeigen %dispData" weight=9
         show(dispData: number) {
-            let compare_01: number = dispData % 100;
-            let compare_001: number = dispData % 1000;
+            let compare_01: number = dispData % 100
+            let compare_001: number = dispData % 1000
 
             if (dispData < 10) {
                 this.ziffer_anzeigen(dispData, 3) // Einer
@@ -48,7 +48,7 @@ namespace serial { /* 4_digit_display.ts
             else if (dispData < 100) {
                 this.ziffer_anzeigen(dispData % 10, 3) // Einer
                 if (dispData > 90) {
-                    this.ziffer_anzeigen(9, 2)
+                    this.ziffer_anzeigen(9, 2) // 90
                 } else {
                     this.ziffer_anzeigen(Math.floor(dispData / 10) % 10, 2) // Zehner
                 }
@@ -59,12 +59,12 @@ namespace serial { /* 4_digit_display.ts
             else if (dispData < 1000) {
                 this.ziffer_anzeigen(dispData % 10, 3) // Einer
                 if (compare_01 > 90) {
-                    this.ziffer_anzeigen(9, 2)
+                    this.ziffer_anzeigen(9, 2) // 90
                 } else {
                     this.ziffer_anzeigen(Math.floor(dispData / 10) % 10, 2) // Zehner
                 }
                 if (compare_001 > 900) {
-                    this.ziffer_anzeigen(9, 1)
+                    this.ziffer_anzeigen(9, 1) // 900
                 } else {
                     this.ziffer_anzeigen(Math.floor(dispData / 100) % 10, 1) // Hunderter
                 }
@@ -73,26 +73,26 @@ namespace serial { /* 4_digit_display.ts
             else if (dispData < 10000) {
                 this.ziffer_anzeigen(dispData % 10, 3) // Einer
                 if (compare_01 > 90) {
-                    this.ziffer_anzeigen(9, 2)
+                    this.ziffer_anzeigen(9, 2) // 90
                 } else {
                     this.ziffer_anzeigen(Math.floor(dispData / 10) % 10, 2) // Zehner
                 }
                 if (compare_001 > 900) {
-                    this.ziffer_anzeigen(9, 1)
+                    this.ziffer_anzeigen(9, 1) // 900
                 } else {
                     this.ziffer_anzeigen(Math.floor(dispData / 100) % 10, 1) // Hunderter
                 }
                 if (dispData > 9000) {
-                    this.ziffer_anzeigen(9, 0)
+                    this.ziffer_anzeigen(9, 0) // 9000
                 } else {
                     this.ziffer_anzeigen(Math.floor(dispData / 1000) % 10, 0) // Tausender
                 }
             }
-            else {
-                this.ziffer_anzeigen(9, 3);
-                this.ziffer_anzeigen(9, 2);
-                this.ziffer_anzeigen(9, 1);
-                this.ziffer_anzeigen(9, 0);
+            else { // 9999
+                this.ziffer_anzeigen(9, 3) // Einer
+                this.ziffer_anzeigen(9, 2) // Zehner
+                this.ziffer_anzeigen(9, 1) // Hunderter
+                this.ziffer_anzeigen(9, 0) // Tausender
             }
         }
 
@@ -103,23 +103,23 @@ namespace serial { /* 4_digit_display.ts
         // stelle.min=0 stelle.max=3
         //% stelle.shadow=serial_eZiffer
         ziffer_anzeigen(ziffer_0_9: number, stelle_0_3: number) {
-            if ((ziffer_0_9 == 0x7f) || ((ziffer_0_9 <= 9) && (stelle_0_3 <= 3))) {
-                let segData = 0;
+            // if ((ziffer_0_9 == 0x7f) || ((ziffer_0_9 <= 9) && (stelle_0_3 <= 3))) {
+            let segData = 0;
 
-                segData = this.coding(ziffer_0_9);
-                this.start();
-                this.writeByte(0x44);
-                this.stop();
-                this.start();
-                this.writeByte(stelle_0_3 | 0xc0);
-                this.writeByte(segData);
-                this.stop();
-                this.start();
-                this.writeByte(0x88 + this.brightnessLevel);
-                this.stop();
+            segData = this.convert_7segment(ziffer_0_9, this.pointFlag)
+            this.start();
+            this.writeByte(0x44);
+            this.stop();
+            this.start();
+            this.writeByte(stelle_0_3 | 0xc0);
+            this.writeByte(segData);
+            this.stop();
+            this.start();
+            this.writeByte(0x88 + this.brightnessLevel);
+            this.stop();
 
-                this.buf[stelle_0_3] = ziffer_0_9 // nur merken für Helligkeit und Doppelpunkt
-            }
+            this.buf[stelle_0_3] = ziffer_0_9 // nur merken für Helligkeit und Doppelpunkt
+            // }
         }
 
 
@@ -158,10 +158,10 @@ namespace serial { /* 4_digit_display.ts
         point(point: boolean) {
             this.pointFlag = point;
 
-            this.ziffer_anzeigen(this.buf[0], 0x00);
+          /*   this.ziffer_anzeigen(this.buf[0], 0x00);
             this.ziffer_anzeigen(this.buf[1], 0x01);
             this.ziffer_anzeigen(this.buf[2], 0x02);
-            this.ziffer_anzeigen(this.buf[3], 0x03);
+            this.ziffer_anzeigen(this.buf[3], 0x03); */
         }
 
 
@@ -197,23 +197,32 @@ namespace serial { /* 4_digit_display.ts
             pins.digitalWritePin(this.dataPin, 1);
         }
 
-        private coding(dispData: number): number {
+        private convert_7segment(hex_0_15: number, doppelpunkt: boolean) {
+          //  let seg_data = doppelpunkt ? 0x80 : 0x00
+            return TubeTab[hex_0_15] | (doppelpunkt ? 0x80 : 0x00)
+        }
+
+      /*   private coding(ziffer_0_9: number): number {
             let pointData = 0;
 
-            if (this.pointFlag == true) pointData = 0x80;
-            else if (this.pointFlag == false) pointData = 0;
+            if (this.pointFlag)
+                pointData = 0x80 // Doppelpunkt
+            //else //if (this.pointFlag == false)
+            //    pointData = 0
 
-            if (dispData == 0x7f) dispData = 0x00 + pointData;
-            else dispData = TubeTab[dispData] + pointData;
+            if (ziffer_0_9 == 0x7f)
+                ziffer_0_9 = 0x00 + pointData;
+            else
+                ziffer_0_9 = TubeTab[ziffer_0_9] + pointData;
 
-            return dispData;
-        }
+            return ziffer_0_9;
+        } */
 
     }
 
     let TubeTab: number[] = [
-        0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07,
-        0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71
+        0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, // 0 1 2 3 4 5 6 7
+        0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71 // 8 9 A b C d E F
     ]
 
 
