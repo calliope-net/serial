@@ -3,20 +3,9 @@ namespace serial { /* 4_digit_display.ts
 "Grove": "github:calliope-edu/pxt-grove#v0.9.2"
 */
 
-
-    /**
-     * Create a new driver Grove - 4-Digit Display
-     * @param clkPin value of clk pin number
-     * @param dataPin value of data pin number
-     */
     //% group="Grove - 4-Digit Display" subcategory="4-Digit Display"
-    //% block="Pins: Takt %clkPin Daten %dataPin"
-    // blockId=grove_tm1637_create 
-    // clkPin.fieldEditor="gridpicker" clkPin.fieldOptions.columns=4
-    // clkPin.fieldOptions.tooltips="false" clkPin.fieldOptions.width="250"
-    // dataPin.fieldEditor="gridpicker" dataPin.fieldOptions.columns=4
+    //% block="Pins: Takt %clkPin Daten %dataPin" weight=9
     //% clkPin.defl=DigitalPin.C16 dataPin.defl=DigitalPin.C17
-    // dataPin.fieldOptions.tooltips="false" dataPin.fieldOptions.width="250"
     //% blockSetVariable=Display
     export function createDisplay(clkPin: DigitalPin, dataPin: DigitalPin): TM1637 {
         let display = new TM1637();
@@ -32,7 +21,8 @@ namespace serial { /* 4_digit_display.ts
     }
 
 
-    // ==========
+    // ========== class TM1637
+
     export class TM1637 {
         clkPin: DigitalPin
         dataPin: DigitalPin
@@ -43,7 +33,7 @@ namespace serial { /* 4_digit_display.ts
 
         // ========== group="4-Ziffern Display" subcategory="4-Digit Display"
 
-        //% group="4-Ziffern Display" subcategory="4-Digit Display"
+        //% group="dezimal" subcategory="4-Digit Display"
         //% block="%Display Zahl 0..9999 anzeigen %dispData" weight=9
         show(dispData: number) {
             let compare_01: number = dispData % 100;
@@ -107,7 +97,7 @@ namespace serial { /* 4_digit_display.ts
         }
 
 
-        //% group="4-Ziffern Display" subcategory="4-Digit Display"
+        //% group="dezimal" subcategory="4-Digit Display"
         //% block="%Display Ziffer 0..9 anzeigen %dispData an Stelle %bitAddr" weight=7
         //% dispData.min=0 dispData.max=9
         //% bitAddr.min=0 bitAddr.max=3
@@ -132,8 +122,36 @@ namespace serial { /* 4_digit_display.ts
         }
 
 
-        //% group="4-Ziffern Display" subcategory="4-Digit Display"
-        //% block="%Display Doppelpunkt %point" weight=6
+
+        // ========== group="Steuerung" subcategory="4-Digit Display"
+
+
+
+        //% group="Grove - 4-Digit Display" subcategory="4-Digit Display"
+        //% block="%Display löschen" weight=4
+        clear() {
+            this.bit(0x7f, 0x00);
+            this.bit(0x7f, 0x01);
+            this.bit(0x7f, 0x02);
+            this.bit(0x7f, 0x03);
+        }
+
+
+        //% group="Grove - 4-Digit Display" subcategory="4-Digit Display"
+        //% block="%Display Helligkeit %level 0..7" weight=3
+        //% level.min=0 level.max=7 level.defl=5
+        set(level: number) {
+            this.brightnessLevel = level;
+            this.bit(this.buf[0], 0x00);
+            this.bit(this.buf[1], 0x01);
+            this.bit(this.buf[2], 0x02);
+            this.bit(this.buf[3], 0x03);
+        }
+
+
+
+        //% group="Grove - 4-Digit Display" subcategory="4-Digit Display"
+        //% block="%Display Doppelpunkt %point" weight=2
         // blockId=grove_tm1637_display_point 
         //%  point.shadow=toggleOnOff
         point(point: boolean) {
@@ -144,29 +162,6 @@ namespace serial { /* 4_digit_display.ts
             this.bit(this.buf[2], 0x02);
             this.bit(this.buf[3], 0x03);
         }
-
-
-        //% group="4-Ziffern Display" subcategory="4-Digit Display"
-        //% block="%Display löschen" weight=4
-        clear() {
-            this.bit(0x7f, 0x00);
-            this.bit(0x7f, 0x01);
-            this.bit(0x7f, 0x02);
-            this.bit(0x7f, 0x03);
-        }
-
-
-        //% group="4-Ziffern Display" subcategory="4-Digit Display"
-        //% block="%Display Helligkeit %level 0..7" weight=2
-        //% level.min=0 level.max=7
-        set(level: number) {
-            this.brightnessLevel = level;
-            this.bit(this.buf[0], 0x00);
-            this.bit(this.buf[1], 0x01);
-            this.bit(this.buf[2], 0x02);
-            this.bit(this.buf[3], 0x03);
-        }
-
 
 
         // ========== private
