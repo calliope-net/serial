@@ -100,8 +100,9 @@ namespace serial { /* 4_digit_display.ts
         //% group="dezimal" subcategory="4-Digit Display"
         //% block="%Display Ziffer 0..9 anzeigen %dispData an Stelle %bitAddr" weight=7
         //% dispData.min=0 dispData.max=9
-        //% bitAddr.min=0 bitAddr.max=3
-        bit(dispData: number, bitAddr: eZiffer) {
+        // bitAddr.min=0 bitAddr.max=3
+        //% bitAddr.shadow=serial_eZiffer
+        bit(dispData: number, bitAddr: number) {
             if ((dispData == 0x7f) || ((dispData <= 9) && (bitAddr <= 3))) {
                 let segData = 0;
 
@@ -212,6 +213,11 @@ namespace serial { /* 4_digit_display.ts
         0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07,
         0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71
     ]
+
+
+    //% blockId=serial_eZiffer blockHidden=true
+    //% block="%pZiffer" 
+    export function serial_eZiffer(pZiffer: eZiffer): number { return pZiffer }
 
     export enum eZiffer {
         //% block="0..."
