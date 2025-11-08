@@ -81,7 +81,7 @@ namespace serial { /* 4_digit_display.ts
         }
 
         //% group="4-Digit" subcategory="4-Digit Display"
-        //% block="%Display Zahl anzeigen %dispData"
+        //% block="%Display Zahl 0..9999 anzeigen %dispData"
         // blockId=grove_tm1637_display_number 
         show(dispData: number) {
             let compare_01: number = dispData % 100;
@@ -144,13 +144,10 @@ namespace serial { /* 4_digit_display.ts
             }
         }
 
-        /**
-         * Set the brightness level of display at from 0 to 7
-         * @param level value of brightness light level
-         */
-        //% blockId=grove_tm1637_set_display_level block="%Display|brightness level to|%level"
-        //% level.min=0 level.max=7
         //% group="4-Digit" subcategory="4-Digit Display"
+        //% block="%Display Helligkeit %level 0..7"
+        // blockId=grove_tm1637_set_display_level 
+        //% level.min=0 level.max=7
         set(level: number) {
             this.brightnessLevel = level;
             this.bit(this.buf[0], 0x00);
@@ -159,16 +156,12 @@ namespace serial { /* 4_digit_display.ts
             this.bit(this.buf[3], 0x03);
         }
 
-        /**
-         * Show a single number from 0 to 9 at a specified digit of Grove - 4-Digit Display
-         * @param dispData value of number
-         * @param bitAddr value of bit number
-         */
-        //% blockId=grove_tm1637_display_bit block="%Display|show single number|%dispData|at digit|%bitAddr"
+        //% group="4-Digit" subcategory="4-Digit Display"
+        //% block="%Display Ziffer 0..9 anzeigen %dispData an Stelle %bitAddr "
+        // blockId=grove_tm1637_display_bit 
         //% dispData.min=0 dispData.max=9
         //% bitAddr.min=0 bitAddr.max=3
-        //% group="4-Digit" subcategory="4-Digit Display"
-        bit(dispData: number, bitAddr: number) {
+        bit(dispData: number, bitAddr: eZiffer) {
             if ((dispData == 0x7f) || ((dispData <= 9) && (bitAddr <= 3))) {
                 let segData = 0;
 
@@ -188,12 +181,10 @@ namespace serial { /* 4_digit_display.ts
             }
         }
 
-        /**
-         * Turn on or off the colon point on Grove - 4-Digit Display
-         * @param pointEn value of point switch
-         */
-        //% blockId=grove_tm1637_display_point block="%Display|turn|%point|colon point"
-        //% group="4-Digit"  point.shadow="toggleOnOff" subcategory="4-Digit Display"
+        //% group="4-Digit" subcategory="4-Digit Display"
+        //% block="%Display Doppelpunkt %point"
+        // blockId=grove_tm1637_display_point 
+        //%  point.shadow=toggleOnOff
         point(point: boolean) {
             this.pointFlag = point;
 
@@ -203,11 +194,9 @@ namespace serial { /* 4_digit_display.ts
             this.bit(this.buf[3], 0x03);
         }
 
-        /**
-         * Clear the display
-         */
-        //% blockId=grove_tm1637_display_clear block="%Display|clear"
         //% group="4-Digit" subcategory="4-Digit Display"
+        //% block="%Display löschen"
+        // blockId=grove_tm1637_display_clear 
         clear() {
             this.bit(0x7f, 0x00);
             this.bit(0x7f, 0x01);
@@ -220,5 +209,16 @@ namespace serial { /* 4_digit_display.ts
         0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07,
         0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71
     ]
+
+    export enum eZiffer {
+        //% block="0..."
+        a = 0,
+        //% block=".1.."
+        b = 1,
+        //% block="..2."
+        c = 2,
+        //% block="...3"
+        d = 3
+    }
 
 } // 4_digit_display.ts
