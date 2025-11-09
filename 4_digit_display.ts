@@ -32,30 +32,30 @@ namespace serial { /* 4_digit_display.ts
 
 
         //% group="hexadezimal" subcategory="4-Digit Display"
-        //% block="%Display Zahl 0..FFFF anzeigen %hex_string || %display0" weight=9
+        //% block="%Display HEX anzeigen %hex_string || führende 0 %display0" weight=9
+        //% display0.shadow=toggleYesNo
         display_hex(hex_string: string, display0 = false) {
-            let digits: number[] = display0 ? [0, 0, 0, 0] : [0x3f, 0x3f, 0x3f, 0x3f]
+            let ci: string // 1 Zeichen aus hex_string (char)
+            let hi: number // HEX Wert 0..15 oder NaN
+            let digits_7segment: number[] = display0 ? [0x3f, 0x3f, 0x3f, 0x3f] : [0, 0, 0, 0] // 0x3f = 0
             for (let i = 0; i < hex_string.length; i++) {
-                let ci = hex_string.charAt(i)
-                if (ci == '-')
-                    digits.push(0b01000000)
+                ci = hex_string.charAt(i)
+                hi = parseInt(ci, 16)
+                if (!Number.isNaN(hi))
+                    digits_7segment.push(TubeTab[hi]) // HEX Wert 0..15
+                else if (ci == '-')
+                    digits_7segment.push(0b01000000)  // Minus -
                 else if (ci == '°')
-                    digits.push(0b01100011)
-                else {
-                    let hi = parseInt(ci, 16)
-                    if (hi != NaN) 
-                        digits.push(this.convert_7segment(hi))
-                     else
-                        digits[digits.length - 1] |= 0x80 // Doppelpunkt bei letzter Ziffer an schalten
-                }
-                // digits.push(parseInt(hex_string.charAt(i), 16))
+                    digits_7segment.push(0b01100011)  // Grad °
+                else // bei allen ungültigen Zeichen kein push
+                    digits_7segment[digits_7segment.length - 1] |= 0x80 // Doppelpunkt bei letzter Ziffer an schalten
             }
-            basic.showNumber(digits.length)
+            basic.showNumber(digits_7segment.length)
 
-            this.segmente_anzeigen(digits.pop(), 3) // Einer
-            this.segmente_anzeigen(digits.pop(), 2) // Zehner
-            this.segmente_anzeigen(digits.pop(), 1) // Hunderter
-            this.segmente_anzeigen(digits.pop(), 0) // Tausender
+            this.segmente_anzeigen(digits_7segment.pop(), 3) // Einer
+            this.segmente_anzeigen(digits_7segment.pop(), 2) // Zehner
+            this.segmente_anzeigen(digits_7segment.pop(), 1) // Hunderter nur hier wird mit Bit 7 Doppelpunkt angezeigt
+            this.segmente_anzeigen(digits_7segment.pop(), 0) // Tausender
         }
 
         // ========== group="4-Ziffern Display" subcategory="4-Digit Display"
@@ -192,7 +192,7 @@ namespace serial { /* 4_digit_display.ts
         //% group="Grove - 4-Digit Display" subcategory="4-Digit Display"
         //% block="%Display Doppelpunkt %point" weight=2
         // blockId=grove_tm1637_display_point 
-        //%  point.shadow=toggleOnOff
+        //% point.shadow=toggleOnOff
         point(point: boolean) {
             this.pointFlag = point;
 
