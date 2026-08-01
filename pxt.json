@@ -10,8 +10,7 @@
         "main.ts",
         "README.md",
         "serial.ts",
-        "cytron_at_command_set.ts",
-        "4_digit_display.ts"
+        "cytron_at_command_set.ts"
     ],
     "testFiles": [
         "test.ts"
